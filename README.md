@@ -21,3 +21,5 @@
 dependencies: [
     .package(url: "https://github.com/ВАШ_НИК/SwiftDataMigrationKit.git", from: "1.0.0")
 ]
+
+(Статья и реп ещё в проработке)
