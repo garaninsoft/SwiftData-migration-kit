@@ -11,14 +11,12 @@ import SwiftData
 @main
 struct TestMgrationApp: App {
     var container: ModelContainer
-       
        init() {
            do {
                container = try ModelContainer(
-                for: ItemSchema.Item.self, // Текущая модель
-//                migrationPlan: ItemMigrationPlan.self,
+                for: Item.self,
                 configurations: ModelConfiguration(
-                    schema: Schema([ItemSchema.Item.self]),
+                    schema: Schema([Item.self]),
                     isStoredInMemoryOnly: false
                 )
                )
@@ -37,10 +35,8 @@ struct TestMgrationApp: App {
         }
         .modelContainer(container)
         .commands {
-            // Перехватываем стандартное меню "Edit" и добавляем шорткат
             CommandGroup(replacing: .textEditing) {
                 Button("Delete") {
-                    // Отправляем системную команду на удаление
                     NSApp.sendAction(#selector(NSText.delete(_:)), to: nil, from: nil)
                 }
                 .keyboardShortcut(.delete, modifiers: []) // Просто клавиша Delete
