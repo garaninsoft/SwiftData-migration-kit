@@ -21,5 +21,11 @@
 dependencies: [
     .package(url: "https://github.com/ВАШ_НИК/SwiftDataMigrationKit.git", from: "1.0.0")
 ]
-
-## Branch "main"
+```
+# Branch Main
+Начальное приложение, где @Model сформирована в простом виде:
+```swift
+dependencies: [
+    .package(url: "https://github.com/ВАШ_НИК/SwiftDataMigrationKit.git", from: "1.0.0")
+]
+```
