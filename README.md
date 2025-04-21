@@ -52,5 +52,5 @@ final class Order {
 }
 ```
 При попытке провести миграции будем получать ошибку 
-"Cannot use staged migration with an unknown model version"
+-"Cannot use staged migration with an unknown model version"-
 Требуется обёртка всех @Models в протокол VersionedSchema
