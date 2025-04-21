@@ -21,5 +21,38 @@
 dependencies: [
     .package(url: "https://github.com/ВАШ_НИК/SwiftDataMigrationKit.git", from: "1.0.0")
 ]
+```
+# Branch Main
+Начальное приложение, где есть связанные таблицы:
+```swift
+@Model
+final class User {
+    var name: String
+    var details: String
+    var orders: [Order]?
+    
+    init(name: String, details: String, orders: [Order]? = nil) {
+        self.name = name
+        self.details = details
+        self.orders = orders
+    }
+}
 
-## Branch "main"
+@Model
+final class Order {
+    var user: User?
+    var title: String
+    var timestamp: Date
+    
+    init(user: User? = nil, title: String, timestamp: Date) {
+        self.user = user
+        self.title = title
+        self.timestamp = timestamp
+    }
+}
+```
+При попытке провести миграции будем получать ошибку 
+
+**"Cannot use staged migration with an unknown model version"**
+
+Требуется обёртка всех @Models в протокол VersionedSchema
