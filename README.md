@@ -23,9 +23,32 @@ dependencies: [
 ]
 ```
 # Branch Main
-Начальное приложение, где @Model сформирована в простом виде:
+Начальное приложение, где есть связанные таблицы:
 ```swift
-dependencies: [
-    .package(url: "https://github.com/ВАШ_НИК/SwiftDataMigrationKit.git", from: "1.0.0")
-]
+@Model
+final class User {
+    var name: String
+    var details: String
+    var orders: [Order]?
+    
+    init(name: String, details: String, orders: [Order]? = nil) {
+        self.name = name
+        self.details = details
+        self.orders = orders
+    }
+}
+
+@Model
+final class Order {
+    var user: User?
+    var title: String
+    var timestamp: Date
+    
+    init(user: User? = nil, title: String, timestamp: Date) {
+        self.user = user
+        self.title = title
+        self.timestamp = timestamp
+    }
+}
 ```
+При поп
