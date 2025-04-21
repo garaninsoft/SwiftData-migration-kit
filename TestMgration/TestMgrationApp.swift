@@ -10,36 +10,36 @@ import SwiftData
 
 @main
 struct TestMgrationApp: App {
-    var container: ModelContainer
-       init() {
-           do {
-               container = try ModelContainer(
-                for: Item.self,
-                configurations: ModelConfiguration(
-                    schema: Schema([Item.self]),
-                    isStoredInMemoryOnly: false
-                )
-               )
-           } catch {
-               fatalError("Failed to configure container: \(error)")
-           }
-       }
-
+    let schema = Schema([User.self, Order.self])
+    var modelContainer: ModelContainer
+    init() {
+        do {
+            modelContainer = try ModelContainer(
+                for: schema, // Берём всю схему, чтобы был доступ по @Environment(\.modelContext) ко всем моделям (может и не понадобится)
+                configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+            )
+        } catch {
+            fatalError("Failed to configure container: \(error)")
+        }
+    }
+    
     var body: some Scene {
         WindowGroup {
-            if let storeURL = container.configurations.first?.url {
+            if let storeURL = modelContainer.configurations.first?.url {
+                // Выведем путь к БД, чтобы в Finder можно было визуально контролировать удаление/создание файлов БД
                 Text( storeURL.path)
                     .textSelection(.enabled)
             }
             ContentView()
         }
-        .modelContainer(container)
+        .modelContainer(modelContainer)
         .commands {
+            // На backspace вешаем операцию delete
             CommandGroup(replacing: .textEditing) {
                 Button("Delete") {
                     NSApp.sendAction(#selector(NSText.delete(_:)), to: nil, from: nil)
                 }
-                .keyboardShortcut(.delete, modifiers: []) // Просто клавиша Delete
+                .keyboardShortcut(.delete, modifiers: [])
             }
         }
     }
