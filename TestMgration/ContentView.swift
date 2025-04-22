@@ -67,6 +67,9 @@ struct ContentView: View {
                     VStack{
                         Text("Order: \(order.title)")
                         Text("timestamp: \(order.timestamp.formatted(date: .numeric, time: .standard)))")
+                        if order.isClosed{
+                            Text("CLOSED")
+                        }
                     }
                 }
             }else{
@@ -94,7 +97,7 @@ struct ContentView: View {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "SSS"
                 let title = "Order created at \(formatter.string(from: Date())) milliseconds"
-                let newOrder = Order(title: title, timestamp: Date())
+                let newOrder = Order(title: title, timestamp: Date(), isClosed: Bool.random())
                 user.orders?.append(newOrder)
             }
         }
