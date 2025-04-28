@@ -253,8 +253,8 @@ final class Order {
 То есть, нужно в модели **Order** 
 заменить поле ```swift var isClosed: Bool ``` на ```swift var closed: Date? ```
 при этом, 
-- если **isClosed == false**, то **closed = nil**.
-- Если **isClosed == true**, то **closed** получит просто текущую дату.
+- если **isClosed == false**, то **closed = nil**
+- если **isClosed == true**, то **closed** получит просто текущую дату.
 
 ---
 ## Branch 🔧 step1-add-version
