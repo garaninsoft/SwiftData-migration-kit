@@ -188,11 +188,9 @@ final class User {
 >  - если в поле был **nil**, то вместо него будет записано значение по умолчанию равное 0.
 
 ## 🔄 Пример обрабатываемой миграции БД в SwiftData
-#### 🎯 Задача
-
----
-## Branch 🌿 main
-Начальное приложение, где есть связанные таблицы:
+### 🎯 Задача
+В **Branch** 🌿 main
+Собрано простое приложение, где есть связанные таблицы:
 ```swift
 @Model
 final class User {
@@ -206,20 +204,53 @@ final class User {
         self.orders = orders
     }
 }
-
 @Model
 final class Order {
     var user: User?
     var title: String
     var timestamp: Date
+    var isClosed: Bool
     
-    init(user: User? = nil, title: String, timestamp: Date) {
+    init(user: User? = nil, title: String, timestamp: Date, isClosed: Bool) {
         self.user = user
         self.title = title
         self.timestamp = timestamp
+        self.isClosed = isClosed
+    }
+}
+
+```
+Предстоит написать миграцию, которая сделает следующие изменения:
+```swift
+@Model
+final class User {
+    var name: String
+    var details: String
+    var orders: [Order]?
+    
+    init(name: String, details: String, orders: [Order]? = nil) {
+        self.name = name
+        self.details = details
+        self.orders = orders
+    }
+}
+@Model
+final class Order {
+    var user: User?
+    var title: String
+    var timestamp: Date
+    var closed: Date?
+    
+    init(user: User? = nil, title: String, timestamp: Date, closed: Date? = nil) {
+        self.user = user
+        self.title = title
+        self.timestamp = timestamp
+        self.closed = closed
     }
 }
 ```
+
+
 
 ---
 ## Branch 🔧 step1-add-version
