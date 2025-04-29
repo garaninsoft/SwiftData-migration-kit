@@ -337,7 +337,7 @@ enum Schema102: VersionedSchema {
 > 3. Номера версий должны быть всегда уникальны `static var versionIdentifier: Schema.Version = .init(1, 0, 1)`. Название же `enum Schema101: VersionedSchema {...}`
 >    может быть произвольным, но, понятное дело, понятным дла разработчиков.
 
-Далее создаётся план миграции, реализующий протокол `VersionedSchema`:
+Далее создаётся план миграции, реализующий протокол `SchemaMigrationPlan`:
 
 ```swift
 import Foundation
