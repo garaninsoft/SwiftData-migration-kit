@@ -16,6 +16,7 @@ struct TestMgrationApp: App {
         do {
             modelContainer = try ModelContainer(
                 for: schema, // Берём всю схему, чтобы был доступ по @Environment(\.modelContext) ко всем моделям
+                migrationPlan: MigrationPlan.self,
                 configurations: ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             )
         } catch {
