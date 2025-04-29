@@ -277,7 +277,7 @@ final class Order {
 При этом, ручная миграция может быть проведена двумя способами. Способы не сильно отличаются, и расположены в ветках **migration1** и **migration2**
 
 ## Branch 🔧 migration1
-Создаётся три переходных схемы, реализующих протокол `VersionedSchema`
+Создаётся три переходных схемы, реализующих протокол `VersionedSchema`:
 
 ```swift
 import Foundation
@@ -313,7 +313,7 @@ enum Schema101: VersionedSchema {
         var title: String
         var timestamp: Date
         var isClosed: Bool
-        var closed: Date?
+        var closed: Date? // Обращаю внимание, что если бы это было не опциональное поле, то требовалось бы значение по умолчанию. Как в автомиграции
         
         init(user: User? = nil, title: String, timestamp: Date, isClosed: Bool = false, closed: Date? = nil) {
             self.user = user
@@ -330,3 +330,44 @@ enum Schema102: VersionedSchema {
     static var versionIdentifier: Schema.Version = .init(1, 0, 2)
 }
 ```
+💡 Ключевые моменты:
+> 1. В `static var models: [any PersistentModel.Type] = [Order.self]` следует указывать только те модели, которые будут изменены.
+> 2. В схемах, реализующих протокол `VersionedSchema` лучше описывать промежуточные состояния изменяемой модели. Тогда как, в последней схеме
+>    сама актуальная модель храниться в предназначенном для неё заранее месте.
+> 3. Номера версий должны быть всегда уникальны `static var versionIdentifier: Schema.Version = .init(1, 0, 1)`. Название же `enum Schema101: VersionedSchema {...}`
+>    может быть произвольным, но, понятное дело, понятным дла разработчиков.
+
+Далее создаётся план миграции, реализующий протокол `VersionedSchema`:
+
+```swift
+import Foundation
+import SwiftData
+
+struct MigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] = [Schema100.self, Schema101.self, Schema102.self]
+    static var stages: [MigrationStage] = [ stage100to101, stage101to102 ]
+    
+    static let stage100to101: MigrationStage = MigrationStage.custom(
+        fromVersion: Schema100.self,
+        toVersion: Schema101.self,
+        willMigrate: nil,
+        didMigrate: { context in
+            let orders = try context.fetch(FetchDescriptor<Schema101.Order>())
+            for order in orders{
+                order.closed = order.isClosed ? Date() : nil
+            }
+            
+            try context.save()
+        }
+    )
+    
+    static let stage101to102 = MigrationStage.lightweight(
+        fromVersion: Schema101.self,
+        toVersion: Schema102.self
+    )
+}
+```
+💡 Ключевые моменты:
+> 1. В данном варианте миграции используется `didMigrate`. То есть, после добавления поля `var closed: Date?` в него будут заноситься данные относительно `isClosed` 
+> 2. В последнем `stage101to102` удаляется поле `isClosed`. По сути - это автомиграция. Поэтому используется простой MigrationStage.lightweight(...)
+> 3. Порядок выполнения шагов миграции внутри `static var stages: [MigrationStage] = [ stage100to101, stage101to102 ]` должен соответствовать. 
