@@ -266,15 +266,67 @@ final class Order {
 - default.store (это основной файл БД)
 - default.store-shm
 - default.store-wal
-  
+
 Для удобства отслеживания изменений в бд во время экспериментов над миграцией лучше пользоваться ещё клиентом типа
 **DB Browser for SQLite**. При этом надо открыть файл **default.store**
----
 
+---
 Для проведения задуманного изменения в модели **User** необходимо добавить поле `var closed: Date?` и удалить поле `var isClosed: Bool`
 С этой задачей вполне бы справилась автомиграция, если бы не было зависимости поля **closed** от поля **isClosed**
 
-При этом, ручная миграция может быть проведена двумя способами.
+При этом, ручная миграция может быть проведена двумя способами. Способы не сильно отличаются, и расположены в ветках **migration1** и **migration2**
 
 ## Branch 🔧 migration1
-Создаётся три переходных схемы, реализующих протокол 
+Создаётся три переходных схемы, реализующих протокол `VersionedSchema`
+
+```swift
+import Foundation
+import SwiftData
+
+enum Schema100: VersionedSchema {
+    static var models: [any PersistentModel.Type] = [Order.self]
+    static var versionIdentifier: Schema.Version = .init(1, 0, 0)
+    
+    @Model
+    final class Order {
+        var user: User?
+        var title: String
+        var timestamp: Date
+        var isClosed: Bool
+        
+        init(user: User? = nil, title: String, timestamp: Date, isClosed: Bool) {
+            self.user = user
+            self.title = title
+            self.timestamp = timestamp
+            self.isClosed = isClosed
+        }
+    }
+}
+
+enum Schema101: VersionedSchema {
+    static var models: [any PersistentModel.Type] = [Order.self]
+    static var versionIdentifier: Schema.Version = .init(1, 0, 1)
+    
+    @Model
+    final class Order {
+        var user: User?
+        var title: String
+        var timestamp: Date
+        var isClosed: Bool
+        var closed: Date?
+        
+        init(user: User? = nil, title: String, timestamp: Date, isClosed: Bool = false, closed: Date? = nil) {
+            self.user = user
+            self.title = title
+            self.timestamp = timestamp
+            self.isClosed = isClosed
+            self.closed = closed
+        }
+    }
+}
+
+enum Schema102: VersionedSchema {
+    static var models: [any PersistentModel.Type] = [Order.self]
+    static var versionIdentifier: Schema.Version = .init(1, 0, 2)
+}
+```
