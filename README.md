@@ -375,5 +375,34 @@ struct MigrationPlan: SchemaMigrationPlan {
 ## Branch 🔧 migration2
 Отличие будет только в реализации протокола `SchemaMigrationPlan`:
 
+```swift
+import Foundation
+import SwiftData
 
+struct MigrationPlan: SchemaMigrationPlan {
+    static var schemas: [any VersionedSchema.Type] = [Schema100.self, Schema101.self, Schema102.self]
+    static var stages: [MigrationStage] = [ stage100to101, stage101to102 ]
+    
+    static let stage100to101 = MigrationStage.lightweight(
+        fromVersion: Schema100.self,
+        toVersion: Schema101.self
+    )
+    
+    static let stage101to102: MigrationStage = MigrationStage.custom(
+        fromVersion: Schema101.self,
+        toVersion: Schema102.self,
+        willMigrate: { context in
+            let orders = try context.fetch(FetchDescriptor<Schema101.Order>())
+            for order in orders{
+                order.closed = order.isClosed ? Date() : nil
+            }
+            try context.save()
+        },
+        didMigrate: nil
+    )
+}
+```
+💡 Ключевые моменты:
+> 1. В данном варианте миграции используется `willMigrate`. То есть, перед удалением поля `isClosed` данные из него будут использованы для формирования данных для `closed` 
+> 2. `stage100to101` имеет облегчённый вариант миграции, так как там просто добавляется поле `var closed: Date?`
 
