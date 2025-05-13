@@ -13,12 +13,12 @@ final class Order {
     var user: User?
     var title: String
     var timestamp: Date
-    var isClosed: Bool
+    var closed: Date?
     
-    init(user: User? = nil, title: String, timestamp: Date, isClosed: Bool) {
+    init(user: User? = nil, title: String, timestamp: Date, closed: Date? = nil) {
         self.user = user
         self.title = title
         self.timestamp = timestamp
-        self.isClosed = isClosed
+        self.closed = closed
     }
 }

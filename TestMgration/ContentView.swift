@@ -55,6 +55,11 @@ struct ContentView: View {
                         Label("Delete Order", systemImage: "trash")
                     }
                 }
+                ToolbarItem {
+                    Button(action: {closeOrder()}) {
+                        Label("Close Order", systemImage: "lock")
+                    }
+                }
             }
         }detail: {
             if let user = selectedUser{
@@ -67,8 +72,8 @@ struct ContentView: View {
                     VStack{
                         Text("Order: \(order.title)")
                         Text("timestamp: \(order.timestamp.formatted(date: .numeric, time: .standard)))")
-                        if order.isClosed{
-                            Text("CLOSED")
+                        if let closed = order.closed{
+                            Text("CLOSED: \(closed.formatted(date: .numeric, time: .standard)))")
                         }
                     }
                 }
@@ -90,14 +95,14 @@ struct ContentView: View {
         }
     }
     
-    // для order так же генерим из текущего Date()
+    // инфу для order так же генерим из текущего Date()
     private func addOrder() {
         if let user = selectedUser{
             withAnimation {
                 let formatter = DateFormatter()
                 formatter.dateFormat = "SSS"
                 let title = "Order created at \(formatter.string(from: Date())) milliseconds"
-                let newOrder = Order(title: title, timestamp: Date(), isClosed: Bool.random())
+                let newOrder = Order(title: title, timestamp: Date(),closed: nil)
                 user.orders?.append(newOrder)
             }
         }
@@ -122,6 +127,15 @@ struct ContentView: View {
             selectedOrder = nil
         }
     }
+    
+    private func closeOrder() {
+            if let order = selectedOrder{
+                withAnimation {
+                    order.closed = Date()
+                    try? modelContext.save()
+                }
+            }
+        }
 }
 
 #Preview {
