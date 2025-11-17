@@ -191,8 +191,8 @@ final class User {
 >  - **nil** values will be replaced with default 0.
 
 
-## 🔄 ПExample of SwiftData DB Migration Handling
-Сформулируем небольшую задачу по миграции.
+## 🔄 Example of SwiftData DB Migration Handling
+Let's formulate a small migration task.
 ### 🎯 Task
 In **Branch** 🌿 main
 a simple app has linked tables:
